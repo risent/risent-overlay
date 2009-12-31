@@ -1,0 +1,12 @@
+# ChangeLog for app-i18n/ibus-sunpinyin
+
+	2009-11-15; Hubert Star <hubertstar@gmail.com>
+	Add ibus-sunpinyin 2.0 rc2 ebuild.
+	Remove sunpinyin 2.0 rc ibus wrapper ebuild (OLD).
+
+
+
+	2009-11-05; Hubert Star <hubertstar@gmail.com>
+	Add sunpinyin 2.0 rc ibus wrapper ebuild.
+	And fix ibus-sunpinyin-9999.ebuild.
+
