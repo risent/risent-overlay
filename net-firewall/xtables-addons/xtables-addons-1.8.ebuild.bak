@@ -1,0 +1,72 @@
+inherit autotools linux-mod eutils
+
+DESCRIPTION="Out of tree iptables modules"
+HOMEPAGE="http://jengelh.medozas.de/projects/xtables/"
+
+RESTRICT="mirror"
+SRC_URI="http://dev.medozas.de/files/xtables/${P}.tar.bz2"
+
+LICENSE="GPL-2"
+
+SLOT="0"
+KEYWORDS="~x86 ~amd64"
+IUSE="ipset"
+
+RDEPEND="virtual/modutils
+	>net-firewall/iptables-1.4.1
+	>virtual/linux-sources-2.6.17"
+
+DEPEND="${RDEPEND}"
+
+pkg_setup()	{
+	CONFIG_CHECK="NETFILTER"
+	NETFILTER_ERROR="Your kernel does not support netfilter"
+	CONFIG_CHECK="NF_CONNTRACK"
+	NETFILTER_ERROR="You need NF_CONNTRACK compiled in or as a module"
+	CONFIG_CHECK="NF_CONNTRACK_MARK"
+	NETFILTER_ERROR="You need NF_CONNTRACK_MARK compiled in or as a module"
+
+	linux-mod_pkg_setup
+}
+
+src_unpack() {
+	unpack ${A}
+	cd "${S}"
+	# Don't compile ipset
+	sed -i s/'build_ipset=m'/'build_ipset=n'/ ./mconfig
+
+}
+
+src_compile() {
+	EBUILD_ARCH="${ARCH}"
+	unset ARCH
+	econf --sbindir=/sbin \
+	      --libexecdir=/$(get_libdir) || die "configure failed"
+	ARCH="${EBUILD_ARCH}"
+	emake -j1 CFLAGS="${CFLAGS}" CC="$(tc-getCC)" || die "emake failed"
+}
+
+src_install() {
+	MODULE_NAMES="compat_xtables(xtables_addons:${S}:${S}/extensions) xt_CHAOS(xtables_addons:${S}:${S}/extensions) \
+		xt_DELUDE(xtables_addons:${S}:${S}/extensions) xt_DHCPADDR(xtables_addons:${S}:${S}/extensions) \
+		xt_IPMARK(xtables_addons:${S}:${S}/extensions) xt_LOGMARK(xtables_addons:${S}:${S}/extensions) \
+		xt_SYSRQ(xtables_addons:${S}:${S}/extensions) xt_TEE(xtables_addons:${S}:${S}/extensions) \
+		xt_condition(xtables_addons:${S}:${S}/extensions) xt_fuzzy(xtables_addons:${S}:${S}/extensions) \
+		xt_geoip(xtables_addons:${S}:${S}/extensions) xt_ipp2p(xtables_addons:${S}:${S}/extensions) \
+		xt_portscan(xtables_addons:${S}:${S}/extensions) xt_quota2(xtables_addons:${S}:${S}/extensions)"
+
+	insinto "$(get_libdir)"/xtables
+	insopts -m0755
+	doins "${S}"/extensions/*.so || die "Installing of .so files failed"
+	doman "${S}"/xtables-addons.8 || die "Installing of man files failed"
+	# xt_SYSRQ complains about not having crypto in you need to make menuconfig and select crypto api and most likely
+	# other things in there. But for now I'm just going to ignore it.
+
+	linux-mod_src_install
+}
+
+pkg_postinst() {
+   linux-mod_pkg_postinst
+}
+
+

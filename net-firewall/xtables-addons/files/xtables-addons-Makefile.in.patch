@@ -1,0 +1,11 @@
+--- Makefile.am	2009-01-13 14:28:28.000000000 -0600
++++ Makefile.am.new	2009-01-14 12:39:45.000000000 -0600
+@@ -13,7 +13,7 @@
+ 	${MAKE} ${AM_MAKEFLAGS} -C $(@D) $(@F)
+ 
+ install-exec-local:
+-	depmod -a || :;
++	echo depmod -a -b ${kbuilddir} || :;
+ 
+ .PHONY: tarball
+ tarball:

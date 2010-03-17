@@ -1,0 +1,17 @@
+--- extensions/GNUmakefile.in	2009-01-14 11:40:13.000000000 -0600
++++ extensions/GNUmakefile.in.new	2009-01-14 11:41:31.000000000 -0600
+@@ -66,10 +66,12 @@
+ all: subdirs modules user matches.man targets.man
+ 
+ subdirs:
+-	@for i in ${subdirs_list}; do ${MAKE} -C $$i; done;
++#	@for i in ${subdirs_list}; do ${MAKE} -C $$i; done;
++	@for i in ${subdirs_list}; do echo skipping $$i; done;
+ 
+ subdirs-install:
+-	@for i in ${subdirs_list}; do ${MAKE} -C $$i install; done;
++#	@for i in ${subdirs_list}; do ${MAKE} -C $$i install; done;
++	@for i in ${subdirs_list}; do echo skipping $$i; done;
+ 
+ user: ${targets}
+ 
