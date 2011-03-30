@@ -80,6 +80,14 @@ pkg_setup() {
 		$(use_with tiff libtiff) \
 		$(use_with wmf)"
 }
+pkg_unpack() {
+	unpack ${A}
+	cd "${S}/plug-ins/file-ico"
+
+	sed sed -i -e 's:png_set_gray_1_2_4_to_8:png_set_expand_gray_1_2_4_to_8:'
+	ico-load.c
+	eautoreconf
+}
 
 pkg_postinst() {
 	gnome2_pkg_postinst
